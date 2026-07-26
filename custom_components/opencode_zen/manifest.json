@@ -1,11 +1,12 @@
 {
   "domain": "opencode_zen",
   "name": "OpencodeZen",
+  "version": "0.1.0",
   "after_dependencies": ["assist_pipeline", "intent"],
   "codeowners": ["@McTalian"],
   "config_flow": true,
   "dependencies": ["conversation"],
-  "documentation": "https://www.home-assistant.io/integrations/opencode_zen",
+  "documentation": "https://www.github.com/McTalian/hacs-opencode-zen/README.md",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "quality_scale": "bronze",
