@@ -19,12 +19,6 @@
 import logging
 from typing import Any, override
 
-from python_opencode_zen import (
-    Model,
-    OpencodeZenClient,
-    OpencodeZenError,
-    SupportedParameter,
-)
 import voluptuous as vol
 
 from homeassistant.config_entries import (
@@ -58,6 +52,31 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+ZEN_BASE_URL = "https://opencode.ai/zen/v1"
+
+
+async def _validate_key(hass, api_key: str) -> str:
+    session = async_get_clientsession(hass)
+    async with session.get(
+        f"{ZEN_BASE_URL}/models",
+        headers={"Authorization": f"Bearer {api_key}"},
+    ) as resp:
+        if resp.status == 401:
+            raise ValueError("Invalid API key")
+        resp.raise_for_status()
+    return f"OpencodeZen ({api_key[:8]}...)"
+
+
+async def _fetch_models(hass, api_key: str) -> list[dict[str, Any]]:
+    session = async_get_clientsession(hass)
+    async with session.get(
+        f"{ZEN_BASE_URL}/models",
+        headers={"Authorization": f"Bearer {api_key}"},
+    ) as resp:
+        resp.raise_for_status()
+        data = await resp.json()
+    return data.get("data", [])
+
 
 class OpencodeZenConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for OpencodeZen."""
@@ -85,19 +104,16 @@ class OpencodeZenConfigFlow(ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is not None:
             self._async_abort_entries_match(user_input)
-            client = OpencodeZenClient(
-                user_input[CONF_API_KEY], async_get_clientsession(self.hass)
-            )
             try:
-                key_data = await client.get_key_data()
-            except OpencodeZenError:
+                label = await _validate_key(self.hass, user_input[CONF_API_KEY])
+            except ValueError:
                 errors["base"] = "cannot_connect"
             except Exception:
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
                 return self.async_create_entry(
-                    title=key_data.label,
+                    title=label,
                     data=user_input,
                 )
         return self.async_show_form(
@@ -116,16 +132,13 @@ class OpencodeZenSubentryFlowHandler(ConfigSubentryFlow):
 
     def __init__(self) -> None:
         """Initialize the subentry flow."""
-        self.models: dict[str, Model] = {}
+        self.models: dict[str, dict[str, Any]] = {}
 
     async def _get_models(self) -> None:
         """Fetch models from OpencodeZen."""
         entry = self._get_entry()
-        client = OpencodeZenClient(
-            entry.data[CONF_API_KEY], async_get_clientsession(self.hass)
-        )
-        models = await client.get_models()
-        self.models = {model.id: model for model in models}
+        models = await _fetch_models(self.hass, entry.data[CONF_API_KEY])
+        self.models = {model["id"]: model for model in models}
 
 
 class ConversationFlowHandler(OpencodeZenSubentryFlowHandler):
@@ -167,7 +180,10 @@ class ConversationFlowHandler(OpencodeZenSubentryFlowHandler):
                 user_input.pop(CONF_LLM_HASS_API, None)
             if self._is_new:
                 return self.async_create_entry(
-                    title=self.models[user_input[CONF_MODEL]].name, data=user_input
+                    title=self.models[user_input[CONF_MODEL]].get(
+                        "name", self.models[user_input[CONF_MODEL]]["id"]
+                    ),
+                    data=user_input,
                 )
             return self.async_update_and_abort(
                 self._get_entry(),
@@ -177,14 +193,12 @@ class ConversationFlowHandler(OpencodeZenSubentryFlowHandler):
 
         try:
             await self._get_models()
-        except OpencodeZenError:
-            return self.async_abort(reason="cannot_connect")
         except Exception:
             _LOGGER.exception("Unexpected exception")
-            return self.async_abort(reason="unknown")
+            return self.async_abort(reason="cannot_connect")
 
         options = [
-            SelectOptionDict(value=model.id, label=model.name)
+            SelectOptionDict(value=model["id"], label=model.get("name", model["id"]))
             for model in self.models.values()
         ]
 
@@ -280,7 +294,10 @@ class AITaskDataFlowHandler(OpencodeZenSubentryFlowHandler):
         if user_input is not None:
             if self._is_new:
                 return self.async_create_entry(
-                    title=self.models[user_input[CONF_MODEL]].name, data=user_input
+                    title=self.models[user_input[CONF_MODEL]].get(
+                        "name", self.models[user_input[CONF_MODEL]]["id"]
+                    ),
+                    data=user_input,
                 )
             return self.async_update_and_abort(
                 self._get_entry(),
@@ -290,16 +307,14 @@ class AITaskDataFlowHandler(OpencodeZenSubentryFlowHandler):
 
         try:
             await self._get_models()
-        except OpencodeZenError:
-            return self.async_abort(reason="cannot_connect")
         except Exception:
             _LOGGER.exception("Unexpected exception")
-            return self.async_abort(reason="unknown")
+            return self.async_abort(reason="cannot_connect")
 
         options = [
-            SelectOptionDict(value=model.id, label=model.name)
+            SelectOptionDict(value=model["id"], label=model.get("name", model["id"]))
             for model in self.models.values()
-            if SupportedParameter.STRUCTURED_OUTPUTS in model.supported_parameters
+            if "STRUCTURED_OUTPUTS" in model.get("supported_parameters", [])
         ]
 
         return self.async_show_form(
