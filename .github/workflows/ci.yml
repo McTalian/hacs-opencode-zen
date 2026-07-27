@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version-file: ".python-version"
+      - name: Install dependencies
+        run: uv sync --group test --no-install-project
+      - name: Run tests
+        run: uv run pytest tests/ -v
+
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: home-assistant/actions/hassfest@e3fb68ebda13d88a0d695082f471ba2c83d025fb # master 2026-07-26
+
+  validate-hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: HACS validation
+        uses: hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa # main 2026-07-26
+        with:
+          category: "integration"
+
+  all_pr_checks:
+    name: Passing PR Checks
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [test, hassfest, validate-hacs]
+    steps:
+      - name: Export needs results as JSON
+        id: export-needs
+        run: echo '${{ toJSON(needs) }}' > needs.json
+
+      - name: Check if all jobs passed or were skipped
+        run: |
+          needs=$(cat needs.json)
+          for job in $(echo "$needs" | jq -r 'keys[]'); do
+            result=$(echo "$needs" | jq -r ".\"$job\".result")
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              echo "Job $job failed."
+              exit 1
+            fi
+          done
+          echo "All jobs passed or were skipped."
+        shell: bash

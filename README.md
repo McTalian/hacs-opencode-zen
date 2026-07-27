@@ -36,6 +36,13 @@ After setup, use the configure button on the integration entry to add a conversa
 
 Use the configure button and select "AI Task" subentry type. Choose a model that supports structured outputs.
 
+## Removal
+
+1. Go to Settings → Devices & services → OpencodeZen.
+2. Click the entry, then click Delete to remove the integration and all its agents.
+3. Remove the custom repository from HACS if desired.
+4. Restart Home Assistant.
+
 ## Configuration options
 
 | Option | Description |
@@ -48,6 +55,22 @@ Use the configure button and select "AI Task" subentry type. Choose a model that
 ## Supported models
 
 All models available through the OpencodeZen API that support chat completions. See [opencode.ai/models](https://opencode.ai/models) for available models.
+
+## Testing
+
+Requires [uv](https://docs.astral.sh/uv/#installation).
+
+```bash
+./run_tests.sh
+```
+
+Or manually:
+
+```bash
+uv venv
+uv sync --group test --no-install-project
+uv run pytest tests/ -v
+```
 
 ## Future features
 

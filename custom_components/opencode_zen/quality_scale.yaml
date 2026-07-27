@@ -36,7 +36,9 @@ rules:
   unique-config-entry: done
 
   # Silver
-  action-exceptions: done
+  action-exceptions:
+    status: exempt
+    comment: No actions are implemented
   config-entry-unloading: done
   docs-configuration-parameters:
     status: exempt
@@ -51,7 +53,7 @@ rules:
     comment: the integration only integrates state-less entities
   parallel-updates: todo
   reauthentication-flow: todo
-  test-coverage: done
+  test-coverage: todo
 
   # Gold
   devices: done
@@ -80,17 +82,19 @@ rules:
     comment: no suitable device class for the conversation entity
   entity-disabled-by-default:
     status: exempt
-    comment: only one conversation entity
-  entity-translations: done
-  exception-translations: todo
+    comment: conversation and AI task entities are not suitable for disable-by-default
+  entity-translations:
+    status: exempt
+    comment: conversation and AI task entities have no translatable states
+  exception-translations: done
   icon-translations: todo
-  reconfiguration-flow: todo
+  reconfiguration-flow: done
   repair-issues:
     status: exempt
     comment: the integration has no repairs
   stale-devices:
     status: exempt
-    comment: only one device per entry, is deleted with the entry.
+    comment: devices are tied to subentries, deleted when subentry is removed
 
   # Platinum
   async-dependency: done
