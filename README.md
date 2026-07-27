@@ -12,7 +12,7 @@ Build custom LLM-powered automations, voice assistants, and data generation task
 - **Conversation Agent** — AI assistant for Home Assistant's conversation/assist pipeline. Can control devices, query state, and run automations via tool calling.
 - **AI Task Agent** — Generate structured data from AI prompts (JSON schema output). Useful for automations that need AI-generated data.
 - **Multiple agents** — Add multiple conversation or task agents, each with its own model and configuration.
-- **Web search** — Toggle per agent. Enables web search tool for the agent.
+- **Web search** — UI toggle exists, backend not yet implemented. See Future features.
 - **File attachments** — Images and PDFs supported.
 - **Custom prompt** — Configure system prompt per agent.
 
@@ -43,11 +43,17 @@ Use the configure button and select "AI Task" subentry type. Choose a model that
 | Model | AI model to use |
 | Prompt | Custom system prompt |
 | Tool access | Allow agent to call Home Assistant APIs |
-| Web search | Enable web search for this agent |
+| Web search | Enable web search for this agent (backend TODO) |
 
 ## Supported models
 
 All models available through the OpencodeZen API that support chat completions. See [opencode.ai/models](https://opencode.ai/models) for available models.
+
+## Future features
+
+| Feature | Status |
+|---------|--------|
+| Web search | TODO |
 
 ## License
 

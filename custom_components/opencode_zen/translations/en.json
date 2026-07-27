@@ -21,10 +21,10 @@
   "config_subentries": {
     "ai_task_data": {
       "abort": {
-        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+        "cannot_connect": "Cannot connect",
         "entry_not_loaded": "The main integration entry is not loaded. Please ensure the integration is loaded before reconfiguring.",
-        "reconfigure_successful": "[%key:common::config_flow::abort::reconfigure_successful%]",
-        "unknown": "[%key:common::config_flow::error::unknown%]"
+        "reconfigure_successful": "Reconfigure successful",
+        "unknown": "Unknown error"
       },
       "entry_type": "AI task",
       "initiate_flow": {
@@ -34,7 +34,7 @@
       "step": {
         "init": {
           "data": {
-            "model": "[%key:common::generic::model%]"
+            "model": "Model"
           },
           "description": "Configure the AI task"
         }
@@ -42,10 +42,10 @@
     },
     "conversation": {
       "abort": {
-        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-        "entry_not_loaded": "[%key:component::opencode_zen::config_subentries::ai_task_data::abort::entry_not_loaded%]",
-        "reconfigure_successful": "[%key:common::config_flow::abort::reconfigure_successful%]",
-        "unknown": "[%key:common::config_flow::error::unknown%]"
+        "cannot_connect": "Cannot connect",
+        "entry_not_loaded": "The main integration entry is not loaded. Please ensure the integration is loaded before reconfiguring.",
+        "reconfigure_successful": "Reconfigure successful",
+        "unknown": "Unknown error"
       },
       "entry_type": "Conversation agent",
       "initiate_flow": {
@@ -55,9 +55,9 @@
       "step": {
         "init": {
           "data": {
-            "llm_hass_api": "[%key:common::config_flow::data::llm_hass_api%]",
-            "model": "[%key:common::generic::model%]",
-            "prompt": "[%key:common::config_flow::data::prompt%]",
+            "llm_hass_api": "Tool access",
+            "model": "Model",
+            "prompt": "Prompt",
             "web_search": "Enable web search"
           },
           "data_description": {

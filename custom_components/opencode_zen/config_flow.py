@@ -314,7 +314,6 @@ class AITaskDataFlowHandler(OpencodeZenSubentryFlowHandler):
         options = [
             SelectOptionDict(value=model["id"], label=model.get("name", model["id"]))
             for model in self.models.values()
-            if "STRUCTURED_OUTPUTS" in model.get("supported_parameters", [])
         ]
 
         return self.async_show_form(
