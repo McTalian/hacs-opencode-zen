@@ -51,7 +51,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.json import json_dumps
 
 from . import OpencodeZenConfigEntry
-from .const import CONF_WEB_SEARCH, DOMAIN, LOGGER
+from .const import DOMAIN, LOGGER
 
 MAX_TOOL_ITERATIONS = 10
 
@@ -249,8 +249,6 @@ class OpencodeZenEntity(Entity):
         """Generate an answer for the chat log."""
 
         model = self.model
-        if self.subentry.data.get(CONF_WEB_SEARCH):
-            model = f"{model}:online"
 
         extra_body: dict[str, Any] = {"require_parameters": True}
 

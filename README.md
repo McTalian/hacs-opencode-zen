@@ -12,7 +12,7 @@ Build custom LLM-powered automations, voice assistants, and data generation task
 - **Conversation Agent** — AI assistant for Home Assistant's conversation/assist pipeline. Can control devices, query state, and run automations via tool calling.
 - **AI Task Agent** — Generate structured data from AI prompts (JSON schema output). Useful for automations that need AI-generated data.
 - **Multiple agents** — Add multiple conversation or task agents, each with its own model and configuration.
-- **Web search** — Toggle per agent. Appends `:online` suffix to model name.
+- **Web search** — Toggle per agent. Enables web search tool for the agent.
 - **File attachments** — Images and PDFs supported.
 - **Custom prompt** — Configure system prompt per agent.
 

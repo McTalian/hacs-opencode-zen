@@ -11,5 +11,5 @@
   "issue_tracker": "https://www.github.com/McTalian/hacs-opencode-zen/issues",
   "quality_scale": "bronze",
   "requirements": ["openai>=2.21.0,<3.0.0"],
-  "version": "0.1.3"
+  "version": "0.1.4"
 }
